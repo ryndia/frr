@@ -3994,6 +3994,16 @@ void bgp_free(struct bgp *bgp)
 			ecommunity_free(&bgp->vpn_policy[afi].rtlist[dir]);
 		if (bgp->vpn_policy[afi].tovpn_rd_pretty)
 			XFREE(MTYPE_BGP, bgp->vpn_policy[afi].tovpn_rd_pretty);
+		if (bgp->vpn_policy[afi].tovpn_sid_locator != NULL)
+			srv6_locator_chunk_free(
+				&bgp->vpn_policy[afi].tovpn_sid_locator);
+		if (bgp->vpn_policy[afi].tovpn_zebra_vrf_sid_last_sent != NULL)
+			XFREE(MTYPE_BGP_SRV6_SID,
+			      bgp->vpn_policy[afi]
+				      .tovpn_zebra_vrf_sid_last_sent);
+		if (bgp->vpn_policy[afi].tovpn_sid != NULL)
+			XFREE(MTYPE_BGP_SRV6_SID,
+			      bgp->vpn_policy[afi].tovpn_sid);
 	}
 
 	bgp_confederation_id_unset(bgp);
