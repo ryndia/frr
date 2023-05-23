@@ -1466,7 +1466,7 @@ int bgp_evpn_path_info_cmp(struct bgp *bgp, struct bgp_path_info *new,
 			     struct bgp_path_info *exist, int *paths_eq)
 {
 	enum bgp_path_selection_reason reason;
-	char pfx_buf[PREFIX2STR_BUFFER];
+	char pfx_buf[PREFIX2STR_BUFFER] = {};
 
 	return bgp_path_info_cmp(bgp, new, exist, paths_eq, NULL, 0, pfx_buf,
 				AFI_L2VPN, SAFI_EVPN, &reason);
@@ -2653,7 +2653,7 @@ void bgp_best_selection(struct bgp *bgp, struct bgp_dest *dest,
 	struct bgp_path_info *nextpi = NULL;
 	int paths_eq, do_mpath, debug;
 	struct list mp_list;
-	char pfx_buf[PREFIX2STR_BUFFER];
+	char pfx_buf[PREFIX2STR_BUFFER] = {};
 	char path_buf[PATH_ADDPATH_STR_BUFFER];
 
 	bgp_mp_list_init(&mp_list);
@@ -7418,7 +7418,7 @@ static bool bgp_aggregate_info_same(struct bgp_path_info *pi, uint8_t origin,
 
 	asnotation = bgp_get_asnotation(NULL);
 
-	if (!ae)
+	if (!aspath)
 		ae = aspath_empty(asnotation);
 
 	if (!pi)
@@ -7477,8 +7477,8 @@ static void bgp_aggregate_install(
 		 * If the aggregate information has not changed
 		 * no need to re-install it again.
 		 */
-		if (bgp_aggregate_info_same(orig, origin, aspath, community,
-					    ecommunity, lcommunity)) {
+		if (pi && bgp_aggregate_info_same(pi, origin, aspath, community,
+						  ecommunity, lcommunity)) {
 			bgp_dest_unlock_node(dest);
 
 			if (aspath)
@@ -13068,6 +13068,15 @@ DEFPY(show_ip_bgp, show_ip_bgp_cmd,
 							get_afi_safi_str(afi,
 									 safi,
 									 true));
+
+						/* Adding 'routes' key to make
+						 * the json output format valid
+						 * for evpn
+						 */
+						if (safi == SAFI_EVPN)
+							vty_out(vty,
+								"\"routes\":");
+
 					} else
 						vty_out(vty,
 							"\nFor address family: %s\n",

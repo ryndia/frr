@@ -243,7 +243,6 @@ def run_frr_cmd(rnode, cmd, isjson=False):
 
 
 def apply_raw_config(tgen, input_dict):
-
     """
     API to configure raw configuration on device. This can be used for any cli
     which has not been implemented in JSON.
@@ -447,7 +446,6 @@ def check_router_status(tgen):
     try:
         router_list = tgen.routers()
         for router, rnode in router_list.items():
-
             result = rnode.check_router_running()
             if result != "":
                 daemons = []
@@ -1914,7 +1912,6 @@ def interface_status(tgen, topo, input_dict):
         rlist = []
 
         for router in input_dict.keys():
-
             interface_list = input_dict[router]["interface_list"]
             status = input_dict[router].setdefault("status", "up")
             for intf in interface_list:
@@ -2189,6 +2186,7 @@ def create_interfaces_cfg(tgen, topo, build=False):
                     interface_data += _create_interfaces_ospf_cfg(
                         "ospf6", c_data, data, ospf_keywords + ["area"]
                     )
+                interface_data.append("exit")
             if interface_data:
                 interface_data_dict[c_router] = interface_data
 
@@ -2529,7 +2527,6 @@ def create_route_maps(tgen, input_dict, build=False):
                 continue
             rmap_data = []
             for rmap_name, rmap_value in input_dict[router]["route_maps"].items():
-
                 for rmap_dict in rmap_value:
                     del_action = rmap_dict.setdefault("delete", False)
 
@@ -3002,7 +2999,6 @@ def addKernelRoute(
         group_addr_range = [group_addr_range]
 
     for grp_addr in group_addr_range:
-
         addr_type = validate_ip_address(grp_addr)
         if addr_type == "ipv4":
             if next_hop is not None:
@@ -3193,7 +3189,6 @@ def configure_brctl(tgen, topo, input_dict):
 
         if "brctl" in input_dict[dut]:
             for brctl_dict in input_dict[dut]["brctl"]:
-
                 brctl_names = brctl_dict.setdefault("brctl_name", [])
                 addvxlans = brctl_dict.setdefault("addvxlan", [])
                 stp_values = brctl_dict.setdefault("stp", [])
@@ -3203,7 +3198,6 @@ def configure_brctl(tgen, topo, input_dict):
                 for brctl_name, vxlan, vrf, stp in zip(
                     brctl_names, addvxlans, vrfs, stp_values
                 ):
-
                     ip_cmd_list = []
                     cmd = "ip link add name {} type bridge stp_state {}".format(
                         brctl_name, stp
@@ -3614,7 +3608,6 @@ def verify_rib(
 
                 for static_route in static_routes:
                     if "vrf" in static_route and static_route["vrf"] is not None:
-
                         logger.info(
                             "[DUT: {}]: Verifying routes for VRF:"
                             " {}".format(router, static_route["vrf"])
@@ -4053,7 +4046,6 @@ def verify_fib_routes(tgen, addr_type, dut, input_dict, next_hop=None, protocol=
 
                 for static_route in static_routes:
                     if "vrf" in static_route and static_route["vrf"] is not None:
-
                         logger.info(
                             "[DUT: {}]: Verifying routes for VRF:"
                             " {}".format(router, static_route["vrf"])
